@@ -14,39 +14,38 @@ class _MainDrawerState extends State<MainDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      elevation: 7,
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            child: DrawerHeader(
-                decoration: BoxDecoration(color: Colors.black87),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Drawer başlığı",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                )),
+        child: ListView(
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'athelas33@gmail.com',
+            ),
           ),
-          InkWell(
+          Divider(
+            height: 1,
+            thickness: 0.5,
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.favorite,
+              color: Colors.blue[600],
+            ),
+            title: Text(
+              'Kayıt ol',
+            ),
             onTap: () => Get.to(() => RegisterPage()),
-            child: ListTile(
-              title: Text("Kayıt ol"),
-              leading: Icon(Icons.account_circle),
-            ),
           ),
-          InkWell(
-            onTap: () => Get.to(() => LoginPage()),
-            child: ListTile(
-              title: Text("Giriş Yap"),
-              leading: Icon(Icons.login),
+          ListTile(
+            leading: Icon(
+              Icons.logout_outlined,
+              color: Colors.blue[600],
             ),
-          )
-        ],
-      ),
-    );
+            title: Text('Giriş Yap'),
+            onTap: () => Get.to(() => LoginPage()),
+          ),
+        ]));
   }
 }

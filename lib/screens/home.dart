@@ -18,40 +18,59 @@ class _MyMainPageState extends State<MyMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _globalKey,
-      drawer: MainDrawer(),
-      appBar: AppBar(
-        backgroundColor: Colors.black87,
-        leading: GestureDetector(
-            onTap: () {
-              _globalKey?.currentState?.openDrawer();
-            },
-            child: Icon(Icons.menu)),
-        actions: [
-          Icon(Icons.notifications),
-          SizedBox(
-            width: 10,
-          )
-        ],
-        title: Center(
-          child: Text(
-            "Anasayfa",
-            textAlign: TextAlign.center,
+    return SafeArea(
+      child: Scaffold(
+        key: _globalKey,
+        drawer: MainDrawer(),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+            child: AppBar(
+                backgroundColor: Colors.white,
+                title: Text(
+                  'Anasayfa',
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w700),
+                ),
+                leading: ElevatedButton(
+                  onPressed: () {
+                    _globalKey?.currentState?.openDrawer();
+                  },
+                  child: Icon(
+                    Icons.menu,
+                    color: Colors.black87,
+                  ),
+                  style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all(Size(50, 50)),
+                      foregroundColor:
+                          MaterialStateProperty.all(Colors.white70),
+                      backgroundColor: MaterialStateProperty.all(
+                        Colors.white,
+                      ),
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(color: Colors.black87, width: 1)))),
+                )),
           ),
         ),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20))),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [Text("Anasayfa'ya hoşgeldiniz.")],
-          )
-        ],
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Anasayfa'ya hoşgeldiniz.",
+                  style: TextStyle(color: Colors.black87),
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
