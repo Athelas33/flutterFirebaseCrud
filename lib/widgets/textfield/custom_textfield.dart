@@ -5,33 +5,33 @@ enum BorderType { FLAT, ROUNDED }
 enum Type { OUTLINED, UNDERLINED }
 
 class CustomTextFormField extends StatelessWidget {
-  final bool? readOnly;
-  final void Function()? onTap;
-  final String? placeholder;
-  final String? hintText;
-  final TextEditingController? controller;
-  final FocusNode? focusNode;
-  final String? Function(String?)? validator;
-  final List<TextInputFormatter>? inputFormatters;
-  final void Function(String)? onChanged;
-  final TextCapitalization? textCapitalization;
-  final InputDecoration? decoration;
-  final BorderType? borderType;
-  final int? maxLength;
-  final bool? obscureText;
-  final TextInputType? textInputType;
-  final TextInputAction? textInputAction;
-  final bool? enabled;
-  final int? maxLines;
-  final int? minLines;
-  final AutovalidateMode? autoValidate;
-  final String? initialValue;
-  final Type? type;
-  final Function()? onEditingComplete;
+  final bool readOnly;
+  final void Function() onTap;
+  final String placeholder;
+  final String hintText;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final String Function(String) validator;
+  final List<TextInputFormatter> inputFormatters;
+  final void Function(String) onChanged;
+  final TextCapitalization textCapitalization;
+  final InputDecoration decoration;
+  final BorderType borderType;
+  final int maxLength;
+  final bool obscureText;
+  final TextInputType textInputType;
+  final TextInputAction textInputAction;
+  final bool enabled;
+  final int maxLines;
+  final int minLines;
+  final AutovalidateMode autoValidate;
+  final String initialValue;
+  final Type type;
+  final Function() onEditingComplete;
   final suffixicon;
 
   const CustomTextFormField(
-      {Key? key,
+      {Key key,
       this.onEditingComplete,
       this.readOnly = false,
       this.placeholder,
@@ -168,7 +168,7 @@ class CustomTextFormField extends StatelessWidget {
                           : BorderRadius.circular(10),
                     ),
           enabled: decoration != null && decoration?.enabled != null
-              ? decoration!.enabled
+              ? decoration.enabled
               : true,
           counterText: "",
         ),

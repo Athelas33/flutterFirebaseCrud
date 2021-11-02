@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ShowPostsPage extends StatefulWidget {
-  const ShowPostsPage({Key? key}) : super(key: key);
+  const ShowPostsPage({Key key}) : super(key: key);
 
   @override
   _ShowPostsPageState createState() => _ShowPostsPageState();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class EditPostPage extends StatefulWidget {
-  const EditPostPage({Key? key}) : super(key: key);
+  const EditPostPage({Key key}) : super(key: key);
 
   @override
   _EditPostPageState createState() => _EditPostPageState();

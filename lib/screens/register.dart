@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutterfirebasecrud/states/register_provider.dart';
+import 'package:flutterfirebasecrud/functions.dart';
+import 'package:flutterfirebasecrud/states/account_provider.dart';
 import 'package:flutterfirebasecrud/widgets/button/custom_button.dart';
 import 'package:flutterfirebasecrud/widgets/button/sign_or_signup_toogle.dart';
 import 'package:flutterfirebasecrud/widgets/icon/social_login_icon.dart';
@@ -10,7 +11,7 @@ import 'package:provider/src/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   final changeToggle;
-  RegisterPage({Key? key, this.changeToggle}) : super(key: key);
+  RegisterPage({Key key, this.changeToggle}) : super(key: key);
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -18,44 +19,52 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool showPassword = false;
-  String? _name;
+  String _name;
 
-  String? _email;
+  String _email;
 
-  String? _password;
-  FirebaseAuth? auth;
+  String _password;
+
   bool loading = false;
   Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
   final _formKey = GlobalKey<FormState>();
-  TextEditingController? _nameController,
-      _emailController,
-      _passwordController,
-      _passwordagainController;
 
   @override
   void initState() {
-    auth = FirebaseAuth.instance;
-    _nameController = TextEditingController();
-    _nameController?.clear();
-    _emailController = TextEditingController();
-    _emailController?.clear();
-    _passwordController = TextEditingController();
-    _passwordController?.clear();
-    _passwordagainController = TextEditingController();
-    _passwordagainController?.clear();
+    context.read<AccountProvider>().auth = FirebaseAuth.instance;
+    context.read<AccountProvider>().nameController = TextEditingController();
+    context.read<AccountProvider>().nameController?.clear();
+    context.read<AccountProvider>().emailController = TextEditingController();
+    context.read<AccountProvider>().emailController?.clear();
+    context.read<AccountProvider>().passwordController =
+        TextEditingController();
+    context.read<AccountProvider>().passwordController?.clear();
+    context.read<AccountProvider>().passwordagainController =
+        TextEditingController();
+    context.read<AccountProvider>().passwordagainController?.clear();
     super.initState();
   }
 
   @override
+  void dispose() {
+    /*  context.read<AccountProvider>().nameController?.dispose();
+    context.read<AccountProvider>().emailController?.dispose();
+    context.read<AccountProvider>().passwordController?.clear();
+    context.read<AccountProvider>().passwordagainController?.dispose(); */
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var registerprovider =
-        Provider.of<RegisterProvider>(context, listen: false);
-    Size size = MediaQuery.of(context).size;
+    var accountprovider = Provider.of<AccountProvider>(context, listen: false);
+
     onSubmitForm() async {
-      if (_formKey.currentState!.validate()) {
+      if (_formKey.currentState.validate()) {
         try {
-          registerprovider.handleSignUp(
-              _emailController?.text, _passwordController?.text, auth!);
+          accountprovider.handleSignUp(
+              context.read<AccountProvider>().emailController?.text,
+              context.read<AccountProvider>().passwordController?.text,
+              context.read<AccountProvider>().auth);
         } catch (e) {
           print(e.toString() + "Bir hata oluştu");
         }
@@ -112,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               CustomTextFormField(
-                controller: _nameController,
+                controller: context.read<AccountProvider>().nameController,
                 placeholder: 'İsim',
                 onChanged: (val) {},
                 obscureText: false,
@@ -128,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: size.height * 0.010,
               ),
               CustomTextFormField(
-                  controller: _emailController,
+                  controller: context.read<AccountProvider>().emailController,
                   placeholder: 'Email',
                   onChanged: (val) {},
                   obscureText: false,
@@ -143,7 +152,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: size.height * 0.010,
               ),
               CustomTextFormField(
-                  controller: _passwordController,
+                  controller:
+                      context.read<AccountProvider>().passwordController,
                   placeholder: "Şifre",
                   onChanged: (val) {
                     setState(() {
@@ -174,7 +184,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: size.height * 0.010,
               ),
               CustomTextFormField(
-                controller: _passwordagainController,
+                controller:
+                    context.read<AccountProvider>().passwordagainController,
                 placeholder: 'Şifre Tekrar',
                 onChanged: (val) {
                   setState(() {
@@ -198,7 +209,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 validator: (value) {
                   if (value?.length == 0) {
                     return "Zorunlu Alan * Şifre Tekrar";
-                  } else if (value != _passwordController?.text) {
+                  } else if (value !=
+                      context
+                          .read<AccountProvider>()
+                          .passwordController
+                          ?.text) {
                     return "Şifreler aynı değil";
                   }
                 },

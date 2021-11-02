@@ -6,7 +6,7 @@ class SignInOrSignUpToggle extends StatelessWidget {
   final textButton;
   final changeToggle;
   const SignInOrSignUpToggle(
-      {Key? key, this.text, this.textButton, this.changeToggle})
+      {Key key, this.text, this.textButton, this.changeToggle})
       : super(key: key);
 
   @override

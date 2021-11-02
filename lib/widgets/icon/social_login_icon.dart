@@ -4,8 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class SocialLogInIcon extends StatelessWidget {
   final icon;
   final onPressed;
-  const SocialLogInIcon({Key? key, this.icon, this.onPressed})
-      : super(key: key);
+  const SocialLogInIcon({Key key, this.icon, this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
