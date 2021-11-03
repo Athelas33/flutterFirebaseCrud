@@ -16,6 +16,11 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AccountProvider()),
+    //stream provider ile durum yönetimi için firebase eşlenilmesi
+    /*  StreamProvider<User>(
+      create: (context) => FirebaseAuth.instance.authStateChanges(),
+      initialData: AccountProvider.user,
+    ) */
   ], child: const MyApp()));
 }
 
@@ -32,6 +37,11 @@ class _MyAppState extends State<MyApp> {
     try {
       FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
         context.read<AccountProvider>().isAuthenticated = firebaseUser != null;
+        if (firebaseUser == null) {
+          print('User is currently signed out!');
+        } else {
+          print('User is signed in!');
+        }
       });
     } catch (e) {
       print(e);
