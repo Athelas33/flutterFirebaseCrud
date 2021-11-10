@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfirebasecrud/functions.dart';
@@ -92,10 +93,13 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: context
                                     .read<AccountProvider>()
                                     .usernameController,
-                                placeholder: "Kullanıcı Adı",
+                                placeholder: "Email",
                                 validator: (value) {
                                   if (value?.length == 0) {
-                                    return "Zorunlu Alan * Kullanıcı Adı";
+                                    return "Zorunlu Alan * Email";
+                                  }
+                                  if (!EmailValidator.validate(value)) {
+                                    return "Lütfen geçerli bir email giriniz";
                                   }
                                 },
                               ),
@@ -140,7 +144,16 @@ class _LoginPageState extends State<LoginPage> {
                                                 .read<AccountProvider>()
                                                 .passwordController
                                                 .text);
-                                      } else {}
+                                      } else {
+                                        Get.rawSnackbar(
+                                            icon: Icon(
+                                              Icons.remove,
+                                              color: Colors.redAccent,
+                                            ),
+                                            title: "Hata",
+                                            message:
+                                                "Boş veya geçersiz değer.");
+                                      }
                                     } catch (e) {
                                       print(e);
                                     }

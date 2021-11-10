@@ -2,12 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfirebasecrud/models/user_credential.dart';
 import 'package:flutterfirebasecrud/screens/home.dart';
+import 'package:flutterfirebasecrud/services/database.dart';
 import 'package:flutterfirebasecrud/states/account_provider.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseService _db = DatabaseService();
 
   User userObject;
   static UserModel userData = UserModel();
@@ -55,12 +57,15 @@ class AuthService {
     }
   }
 
-  handleSignUp(email, password) async {
+  handleSignUp(email, password, name) async {
     accountprovider.setLoading(false);
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
+      print(result);
+      await _db.registerUser(result.user.uid, email, name);
+      await _auth.signOut();
       Get.rawSnackbar(
           icon: Icon(
             Icons.check,
@@ -69,11 +74,18 @@ class AuthService {
           title: "Başarılı",
           message: "Kullanıcı kaydı oluşturuldu.");
 
+      // Get.offAll(() => MyMainPage());
       accountprovider.setLoading(true);
-      print(result);
-      Get.back();
-    } catch (e) {
+    } catch (e, s) {
+      print(s);
       print(e);
+      Get.rawSnackbar(
+          icon: Icon(
+            Icons.error,
+            color: Colors.redAccent,
+          ),
+          title: "Hata",
+          message: e.toString());
       accountprovider.setLoading(true);
     }
   }

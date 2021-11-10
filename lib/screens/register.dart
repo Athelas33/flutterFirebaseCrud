@@ -1,4 +1,6 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutterfirebasecrud/functions.dart';
 import 'package:flutterfirebasecrud/services/auth.dart';
 import 'package:flutterfirebasecrud/shared/loading.dart';
@@ -45,6 +47,9 @@ class _RegisterPageState extends State<RegisterPage> {
     context.read<AccountProvider>().passwordagainController =
         TextEditingController();
     context.read<AccountProvider>().passwordagainController?.clear();
+    context.read<AccountProvider>().fcNode1 = FocusNode();
+    context.read<AccountProvider>().fcNode2 = FocusNode();
+    context.read<AccountProvider>().fcNode3 = FocusNode();
     super.initState();
   }
 
@@ -67,6 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
           _authService.handleSignUp(
             context.read<AccountProvider>().emailController?.text,
             context.read<AccountProvider>().passwordController?.text,
+            context.read<AccountProvider>().nameController?.text,
           );
         } catch (e) {
           print(e.toString() + "Bir hata oluştu");
@@ -132,71 +138,94 @@ class _RegisterPageState extends State<RegisterPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomTextFormField(
+                                controller: context
+                                    .read<AccountProvider>()
+                                    .nameController,
+                                placeholder: 'İsim',
+                                onChanged: (val) {},
+                                obscureText: false,
+                                hintText: 'örn:Esat Akyıldız',
+                                textInputType: TextInputType.text,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp('[a-zA-Z]')),
+                                ],
+                                validator: (value) {
+                                  if (value?.length == 0) {
+                                    return "Zorunlu Alan * Kullanıcı Adı";
+                                  }
+                                },
+                                onEditingComplete: () => Focus.of(Get.context)
+                                    .requestFocus(context
+                                        .read<AccountProvider>()
+                                        .fcNode1)),
+                            SizedBox(
+                              height: size.height * 0.010,
+                            ),
+                            CustomTextFormField(
                               controller: context
                                   .read<AccountProvider>()
-                                  .nameController,
-                              placeholder: 'İsim',
+                                  .emailController,
+                              placeholder: 'Email',
+                              focusNode:
+                                  context.read<AccountProvider>().fcNode1,
                               onChanged: (val) {},
                               obscureText: false,
-                              hintText: 'örn:Esat Akyıldız',
+                              hintText: 'account@gmail.com',
                               textInputType: TextInputType.text,
                               validator: (value) {
                                 if (value?.length == 0) {
-                                  return "Zorunlu Alan * Kullanıcı Adı";
+                                  return "Zorunlu Alan * Email";
+                                }
+                                if (!EmailValidator.validate(value)) {
+                                  return "Lütfen geçerli bir email giriniz";
                                 }
                               },
+                              onEditingComplete: () =>
+                                  Focus.of(Get.context).requestFocus(
+                                context.read<AccountProvider>().fcNode2,
+                              ),
                             ),
                             SizedBox(
                               height: size.height * 0.010,
                             ),
                             CustomTextFormField(
-                                controller: context
-                                    .read<AccountProvider>()
-                                    .emailController,
-                                placeholder: 'Email',
-                                onChanged: (val) {},
-                                obscureText: false,
-                                hintText: 'account@gmail.com',
-                                textInputType: TextInputType.text,
-                                validator: (value) {
-                                  if (value?.length == 0) {
-                                    return "Zorunlu Alan * Email";
-                                  }
-                                }),
-                            SizedBox(
-                              height: size.height * 0.010,
+                              controller: context
+                                  .read<AccountProvider>()
+                                  .passwordController,
+                              placeholder: "Şifre",
+                              focusNode:
+                                  context.read<AccountProvider>().fcNode2,
+                              onChanged: (val) {
+                                setState(() {
+                                  _password = val;
+                                });
+                              },
+                              suffixicon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      showPassword = !showPassword;
+                                    });
+                                  },
+                                  icon: showPassword
+                                      ? Icon(
+                                          Icons.visibility_outlined,
+                                          color: Colors.white60,
+                                        )
+                                      : Icon(Icons.visibility_off,
+                                          color: Colors.white60)),
+                              hintText: 'Güçlü bir şifre giriniz',
+                              textInputType: TextInputType.text,
+                              obscureText: true,
+                              validator: (value) {
+                                if (value?.length == 0) {
+                                  return "Zorunlu Alan * Şifre";
+                                }
+                              },
+                              onEditingComplete: () => Focus.of(Get.context)
+                                  .requestFocus(
+                                      context.read<AccountProvider>().fcNode3),
                             ),
-                            CustomTextFormField(
-                                controller: context
-                                    .read<AccountProvider>()
-                                    .passwordController,
-                                placeholder: "Şifre",
-                                onChanged: (val) {
-                                  setState(() {
-                                    _password = val;
-                                  });
-                                },
-                                suffixicon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        showPassword = !showPassword;
-                                      });
-                                    },
-                                    icon: showPassword
-                                        ? Icon(
-                                            Icons.visibility_outlined,
-                                            color: Colors.white60,
-                                          )
-                                        : Icon(Icons.visibility_off,
-                                            color: Colors.white60)),
-                                hintText: 'Güçlü bir şifre giriniz',
-                                textInputType: TextInputType.text,
-                                obscureText: true,
-                                validator: (value) {
-                                  if (value?.length == 0) {
-                                    return "Zorunlu Alan * Şifre";
-                                  }
-                                }),
                             SizedBox(
                               height: size.height * 0.010,
                             ),
@@ -204,6 +233,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               controller: context
                                   .read<AccountProvider>()
                                   .passwordagainController,
+                              focusNode:
+                                  context.read<AccountProvider>().fcNode3,
                               placeholder: 'Şifre Tekrar',
                               onChanged: (val) {
                                 setState(() {

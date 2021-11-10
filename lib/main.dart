@@ -2,8 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutterfirebasecrud/models/mainpage_post_model.dart';
 import 'package:flutterfirebasecrud/screens/home.dart';
+import 'package:flutterfirebasecrud/services/auth.dart';
+import 'package:flutterfirebasecrud/services/database.dart';
+import 'package:flutterfirebasecrud/shared/loading.dart';
 import 'package:flutterfirebasecrud/states/account_provider.dart';
+import 'package:flutterfirebasecrud/widgets/app/global_error_widget.dart';
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +22,12 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AccountProvider()),
+    StreamProvider<User>(
+      create: (context) => FirebaseAuth.instance.authStateChanges(),
+    ),
+    StreamProvider<List<MainPost>>(
+      create: (context) => DatabaseService().posts,
+    ),
     //stream provider ile durum yönetimi için firebase eşlenilmesi
     /*  StreamProvider<User>(
       create: (context) => FirebaseAuth.instance.authStateChanges(),
@@ -32,64 +44,48 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final Future<FirebaseApp> _initFirebaseSdk = Firebase.initializeApp();
   @override
   void initState() {
-    try {
-      FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
-        context.read<AccountProvider>().isAuthenticated = firebaseUser != null;
-        if (firebaseUser == null) {
-          print('User is currently signed out!');
-        } else {
-          print('User is signed in!');
-        }
-      });
-    } catch (e) {
-      print(e);
-    }
+    context.read<AccountProvider>().isAuthenticated = false;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      // Initialize FlutterFire
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        // Check for errors
-        if (snapshot.hasError) {
-          return GetMaterialApp(
-              home: Scaffold(
-            body: Center(
-              child: Text("Bir hata ile karşılaşıldı."),
-            ),
-          ));
-        }
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+          fontFamily: "Arimo",
+          iconTheme: IconThemeData(color: Colors.blue),
+          primaryColor: Colors.blue,
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(
+              backgroundColor: Color.fromRGBO(10, 10, 10, 1), elevation: 0.0)),
+      home: FutureBuilder(
+          future: _initFirebaseSdk,
+          builder: (_, snapshot) {
+            if (snapshot.hasError) return GlobalErrorWidget();
 
-        // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
-          return GetMaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
-            theme: ThemeData(
-                fontFamily: "Arimo",
-                iconTheme: IconThemeData(color: Colors.blue),
-                primaryColor: Colors.blue,
-                scaffoldBackgroundColor: Colors.white,
-                appBarTheme: AppBarTheme(
-                    backgroundColor: Color.fromRGBO(10, 10, 10, 1),
-                    elevation: 0.0)),
-            home: MyMainPage(),
-          );
-        }
+            if (snapshot.connectionState == ConnectionState.done) {
+              // Assign listener after the SDK is initialized successfully
+              FirebaseAuth.instance.authStateChanges().listen((User user) {
+                if (user == null) {
+                  context.read<AccountProvider>().isAuthenticated = false;
+                  Get.to(MyMainPage());
+                } else {
+                  context.read<AccountProvider>().isAuthenticated = true;
+                  Get.to(MyMainPage());
+                }
+              });
+            }
 
-        // Otherwise, show something whilst waiting for initialization to complete
-        return GetMaterialApp(
-            home: Scaffold(
-          body: Center(
-            child: Text("Yükleniyor.."),
-          ),
-        ));
-      },
+            return Loading();
+          }),
     );
   }
+
+  // Otherwise, show something whilst waiting for initialization to complete
+
 }
