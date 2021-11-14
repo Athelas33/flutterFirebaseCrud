@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterfirebasecrud/models/mainpage_post_model.dart';
+import 'package:flutterfirebasecrud/models/user_credential.dart';
 import 'package:flutterfirebasecrud/screens/home.dart';
 import 'package:flutterfirebasecrud/services/auth.dart';
 import 'package:flutterfirebasecrud/services/database.dart';
@@ -25,9 +26,7 @@ void main() async {
     StreamProvider<User>(
       create: (context) => FirebaseAuth.instance.authStateChanges(),
     ),
-    StreamProvider<List<MainPost>>(
-      create: (context) => DatabaseService().posts,
-    ),
+
     //stream provider ile durum yönetimi için firebase eşlenilmesi
     /*  StreamProvider<User>(
       create: (context) => FirebaseAuth.instance.authStateChanges(),

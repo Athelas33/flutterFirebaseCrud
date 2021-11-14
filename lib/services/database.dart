@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfirebasecrud/models/mainpage_post_model.dart';
 import 'package:flutterfirebasecrud/models/post_model.dart';
+import 'package:flutterfirebasecrud/models/user_credential.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 
@@ -49,20 +50,6 @@ class DatabaseService {
           title: "Hata",
           message: e.toString());
     }
-  }
-
-  List<MainPost> _postListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) {
-      return MainPost.fromFireStore(doc);
-    }).toList();
-  }
-
-  // get all posts
-  Stream<List<MainPost>> get posts {
-    return FirebaseFirestore.instance
-        .collectionGroup('users')
-        .snapshots()
-        .map(_postListFromSnapshot);
   }
 
   // get individual user posts
