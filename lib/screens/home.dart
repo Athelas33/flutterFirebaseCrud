@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutterfirebasecrud/constants/gradient_color.dart';
 import 'package:flutterfirebasecrud/functions.dart';
+import 'package:flutterfirebasecrud/main.dart';
 import 'package:flutterfirebasecrud/models/mainpage_post_model.dart';
 import 'package:flutterfirebasecrud/models/user_credential.dart';
 import 'package:flutterfirebasecrud/screens/post_detail.dart';
@@ -44,6 +48,13 @@ class _MyMainPageState extends State<MyMainPage> with TickerProviderStateMixin {
     ); //..addListener(() => setState(() {}));
     value = _controller.value;
     _animate();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (updateDialog == true) {
+        context.read<AccountProvider>().updateDialog();
+      }
+    });
+
     super.initState();
   }
 
@@ -54,222 +65,331 @@ class _MyMainPageState extends State<MyMainPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Consumer<AccountProvider>(
-      builder: (context, value, _) => SafeArea(
-        child: Scaffold(
-            key: _globalKey,
-            drawer: MainDrawer(),
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(100),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                child: AppBar(
-                    backgroundColor: Colors.white,
-                    title: Text(
-                      'Anasayfa',
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    leading: ElevatedButton(
-                      onPressed: () {
-                        _globalKey?.currentState?.openDrawer();
-                      },
-                      child: Icon(
-                        Icons.menu,
-                        color: Colors.black87,
-                      ),
-                      style: ButtonStyle(
-                          minimumSize: MaterialStateProperty.all(Size(50, 50)),
-                          foregroundColor:
-                              MaterialStateProperty.all(Colors.white70),
-                          backgroundColor: MaterialStateProperty.all(
-                            Colors.white,
-                          ),
-                          shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  side: BorderSide(
-                                      color: Colors.black87, width: 1)))),
-                    )),
-              ),
-            ),
-            body: Container(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnimatedBuilder(
-                        animation:
-                            CurvedAnimation(parent: _controller, curve: _curve),
-                        builder: (context, child) {
-                          return Opacity(
-                              opacity: _controller.value,
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 65,
-                                        backgroundColor: Colors.black54,
-                                        child: CircleAvatar(
-                                          radius: 62,
-                                          backgroundColor: Colors.white,
-                                          child: CircleAvatar(
-                                              radius: 58,
-                                              child: ClipOval(
-                                                  child: Image.asset(
-                                                      'assets/images/myavatar2.jpg'))),
+      builder: (context, value, _) => WillPopScope(
+        onWillPop: () async {
+          if (_globalKey.currentState.isDrawerOpen) {
+            Get.back();
+          } else {
+            showGeneralDialog(
+                barrierColor: Colors.black.withOpacity(0.5),
+                transitionBuilder: (context, a1, a2, widget) {
+                  final curvedValue =
+                      Curves.easeInOutBack.transform(a1.value) - 1.0;
+                  return Transform(
+                      transform: Matrix4.translationValues(
+                          0.0, curvedValue * 200, 0.0),
+                      child: Opacity(
+                          opacity: a1.value,
+                          child: AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20.0))),
+                            backgroundColor: Colors.white,
+                            title: FittedBox(
+                              child: new Text(
+                                'Çıkmak istediğinizden emin misiniz?',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            actions: [
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    new TextButton(
+                                      onPressed: () => exit(0),
+                                      child: Text(
+                                        "Evet",
+                                        style: TextStyle(
+                                          color: Colors.blue[700],
                                         ),
                                       ),
-                                      Expanded(
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: size.height * 0.020,
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  width: size.width * 0.020,
-                                                ),
-                                                Text(
-                                                  "Esat Akyıldız - ",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                Text(
-                                                  "Mobil Aplikasyon Geliştirici",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      color: Colors.blue[700],
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          size.height * 0.013),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                                width: size.width * 0.6,
-                                                child: Divider(
-                                                  thickness: 0.7,
-                                                )),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  height: size.height * 0.030,
-                                                  width: size.height * 0.030,
-                                                  child: Image.asset(
-                                                      'assets/images/flutter_icon.jpg'),
-                                                ),
-                                                SizedBox(
-                                                    width: size.width * 0.020),
-                                                Text(
-                                                  " Flutter Geliştirici",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ],
-                                            )
-                                          ],
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.020,
+                                    ),
+                                    new TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: Text(
+                                        "Hayır",
+                                        style: TextStyle(
+                                          color: Colors.black,
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ));
-                        }),
-                    SizedBox(
-                      height: size.height * 0.030,
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: AnimatedBuilder(
+                                      ),
+                                    ),
+                                  ]),
+                            ],
+                          )));
+                },
+                transitionDuration: Duration(milliseconds: 200),
+                barrierDismissible: true,
+                barrierLabel: '',
+                context: context,
+                pageBuilder: (context, animation1, animation2) {});
+          }
+          return false;
+        },
+        child: SafeArea(
+          child: Scaffold(
+              key: _globalKey,
+              drawer: MainDrawer(),
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(
+                  AppBar().preferredSize.height,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: AppBar(
+                      backgroundColor: Colors.white,
+                      title: Text(
+                        'Anasayfa',
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: size.height * 0.024,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      leading: ElevatedButton(
+                        onPressed: () {
+                          _globalKey?.currentState?.openDrawer();
+                        },
+                        child: Icon(
+                          Icons.menu,
+                          color: Colors.black87,
+                        ),
+                        style: ButtonStyle(
+                            minimumSize:
+                                MaterialStateProperty.all(Size(50, 50)),
+                            foregroundColor:
+                                MaterialStateProperty.all(Colors.white70),
+                            backgroundColor: MaterialStateProperty.all(
+                              Colors.white,
+                            ),
+                            shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    side: BorderSide(
+                                        color: Colors.black87, width: 1)))),
+                      )),
+                ),
+              ),
+              body: Container(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedBuilder(
                           animation: CurvedAnimation(
                               parent: _controller, curve: _curve),
                           builder: (context, child) {
                             return Opacity(
                                 opacity: _controller.value,
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.vertical,
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(" Merhaba, ben "),
-                                          Text("Esat Akyıldız",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold))
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(width: size.width * 0.005),
-                                          Expanded(
-                                              flex: 10,
-                                              child: Text(
-                                                "\n" +
-                                                    "Teknolojiye olan merakım 8.yaşımda başladı.Elbetteki çoğu çocukluk çağında olanlar gibi bende gamer bir çocuktum. :) . Mmorpg oyunlarda çok fazla süremi geçirdim.Keşke bu kadar lüzumsuz geçirmeseydik vaktimizi .." +
-                                                    "\n\n" +
-                                                    "En başta programlama sektörüne girmeden önce tırsmıştım . Acaba yapabilir miyim? . Üniversite de ilk algoritma  ile karşılaşınca kavrayamayacağımı düşündüm. Fakat işin enteresan tarafı 17.yaşımdayken Gta San Andreas oyununa Oğuzhan diye bir arkadaşım ile server açmıştık . İki ay kadar idare edebildik ama olsun. :)  Oğuzhan ile server'ımıza basit bir çete modu oluşturmuştuk. Demem o ki o vakitlerde çok zevk almıştık neden yapamayayım dedim ve bu sektöre azim ile giriş yaptım. " +
-                                                    "\n\n" +
-                                                    "Üniversite yıllarımda en büyük hayalim kendi oyunumu icra edebilmekti.Ülkemizde halen profesyonel oyun sektöründe ne yazık ki iyi ürünlerimiz halen yok.Hayalim kendi kültürümüzü yansıtan bir moba oyunu tasarlamaktı.Unity 3D isimli oyun motoru ile 5 aylık bir deneyimim oldu.Hazır objeler dahilinde kendi araba yarışı oyunumu yapmıştım 3 stage barındırsa da keyif almıştım diyebilirim . :) . Ama ne yazık ki bu iş için minimum 8 kişilik ekip gerekiyor. Efor yetmedi ve baygınlık geçirip bıraktım. :)" +
-                                                    "\n\n" +
-                                                    "Uzun bir süre Ae,Sony vegas pro gibi video editörlüğü programlarında vakit geçirdikten sonra.. Kendime sorduğum soru , ne yapmak istiyorsun ?" +
-                                                    "\n\n" +
-                                                    "Hayatımda geçirmiş olduğum belli başlı ağır manevi problemlerden sonra bir toparlanma sürecine girdim. Psikoloğum , hayat hocam ; Neval Güzel..  kıymetimi bilmem doğrultusunda bana çok yardımcı oldu. Sonrasında ise 'Çılgın Profesör' lakaplı Yalçın abim ile :) uzun  muhabbetlerin neticesinde 'Mobil Geliştiricilik' yolunda profesyonelliğe doğru gitme kararı aldım.   " +
-                                                    "\n\n",
-                                                style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize:
-                                                        size.height * 0.015),
-                                              )),
-                                          SizedBox(width: size.width * 0.005),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Şimdilik bu kadar . Hayallerimize kaldığımız yerden devam..",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: size.height * 0.013),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: size.height * 0.010,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue[700],
+                                              gradient: mygradient,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            height: size.height * 0.13,
+                                            width: size.height * 0.13,
+                                            child: Center(
+                                                child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Stack(
+                                                children: [
+                                                  InkWell(
+                                                    onTap: () {
+                                                      try {
+                                                        value.openCustomDialog(
+                                                            'assets/images/myavatar.jpg');
+                                                      } catch (e) {}
+                                                    },
+                                                    child: Image.asset(
+                                                      'assets/images/myavatar.jpg',
+                                                      height:
+                                                          size.height * 0.124,
+                                                      width:
+                                                          size.height * 0.124,
+                                                    ),
+                                                  ),
+                                                  Positioned(
+                                                      bottom: 0,
+                                                      right: 0,
+                                                      child: Icon(
+                                                        Icons.search,
+                                                        color: Colors.white,
+                                                      )),
+                                                ],
+                                              ),
+                                            ))),
+                                        Expanded(
+                                          child: FittedBox(
+                                            child: Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: size.height * 0.020,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: size.width * 0.020,
+                                                    ),
+                                                    Text(
+                                                      "Esat Akyıldız - ",
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    FittedBox(
+                                                      child: Text(
+                                                        "Mobil Aplikasyon Geliştirici",
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: TextStyle(
+                                                          color:
+                                                              Colors.blue[700],
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                    width: size.width * 0.6,
+                                                    child: Divider(
+                                                      thickness: 0.7,
+                                                    )),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      height:
+                                                          size.height * 0.030,
+                                                      width:
+                                                          size.height * 0.030,
+                                                      child: Image.asset(
+                                                          'assets/images/flutter_icon.jpg'),
+                                                    ),
+                                                    SizedBox(
+                                                        width:
+                                                            size.width * 0.020),
+                                                    Text(
+                                                      " Flutter Geliştirici",
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
                                           ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
                                 ));
                           }),
-                    ),
-                    SizedBox(height: size.height * 0.020),
-                    SizedBox(
-                      width: size.width * 0.5,
-                      child: Divider(
-                        thickness: 0.3,
-                        color: Colors.black45,
+                      SizedBox(
+                        height: size.height * 0.030,
                       ),
-                    ),
-                    SizedBox(height: size.height * 0.020),
-                    Expanded(
-                      child: FutureBuilder<QuerySnapshot>(
-                          future: mainposts,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              final List<DocumentSnapshot> documents =
-                                  snapshot.data.docs;
-                              return AnimatedSwitcher(
-                                duration: Duration(seconds: 1),
-                                child: ListView(
+                      Expanded(
+                        flex: 2,
+                        child: AnimatedBuilder(
+                            animation: CurvedAnimation(
+                                parent: _controller, curve: _curve),
+                            builder: (context, child) {
+                              return Opacity(
+                                  opacity: _controller.value,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    physics: BouncingScrollPhysics(),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(" Merhaba, ben "),
+                                            Text("Esat Akyıldız",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold))
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            SizedBox(width: size.width * 0.005),
+                                            Expanded(
+                                                flex: 10,
+                                                child: Text(
+                                                  "\n" +
+                                                      "Teknolojiye olan merakım 8.yaşımda başladı.Elbetteki çoğu çocukluk çağında olanlar gibi bende gamer bir çocuktum. :)  Mmorpg tarzı oyunlarda çok fazla süremi geçirdim.Keşke bu kadar lüzumsuz geçirmeseydik vaktimizi .." +
+                                                      "\n\n" +
+                                                      "En başta programlama sektörüne girmeden önce ürkmüştüm . Acaba yapabilir miyim? . Üniversite de  algoritma  ile ilk karşılaşmamda kavrayamayacağımı düşündüm. Fakat işin garip kısmı 17.yaşımda iken Gta San Andreas isimli  oyunda Oğuzhan diye bir arkadaşım ile server açmıştık . İki ay kadar idare edebildik ama olsun. :)  Oğuzhan ile server'ımıza basit bir çete modu oluşturmuştuk. Demem o ki o vakitlerde çok zevk almıştık neden yapamayayım dedim ve bu sektöre azim ile giriş yaptım. " +
+                                                      "\n\n" +
+                                                      "Üniversite yıllarımda en büyük hayalim kendi oyunumu icra edebilmekti.Ülkemizde halen profesyonel oyun sektöründe ne yazık ki iyi ürünlerimiz halen yok.Hayalim kendi kültürümüzü yansıtan bir moba oyunu tasarlamaktı.Unity 3D isimli oyun motoru ile 5 aylık bir deneyimim oldu.Hazır objeler dahilinde kendi araba yarışı oyunumu yapmıştım 3 stage barındırsa da keyif almıştım diyebilirim :) . Ama ne yazık ki bu iş için minimum 8 kişilik ekip gerekiyor. Efor yetmedi ve sıkılıp  bıraktık. :)" +
+                                                      "\n\n" +
+                                                      "Uzun bir süre Ae,Sony Vegas Pro gibi video editörlüğü programlarında vakit geçirdikten sonra.. Kendime sorduğum soru , ne yapmak istiyorsun ?" +
+                                                      "\n\n" +
+                                                      "Hayatımda geçirmiş olduğum belli başlı  manevi problemlerimden sonra bir toparlanma sürecine girdim. Psikoloğum , hayat hocam ; Neval Güzel..  kıymetimi bilmem doğrultusunda bana çok yardımcı oldu. Sonrasında ise 'Çılgın Profesör' lakaplı Yalçın abim ile :) uzun  muhabbetlerin neticesinde 'Mobil Geliştiricilik' yolunda profesyonelliğe doğru yönelme kararı aldım.   " +
+                                                      "\n\n",
+                                                  style: TextStyle(
+                                                    color: Colors.black87,
+                                                  ),
+                                                )),
+                                            SizedBox(width: size.width * 0.005),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Şimdilik bu kadar ." +
+                                                  "\n" +
+                                                  "Hayallerimize kaldığımız yerden devam..",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ));
+                            }),
+                      ),
+                      SizedBox(height: size.height * 0.010),
+                      SizedBox(
+                        width: size.width * 0.5,
+                        child: Divider(
+                          thickness: 0.3,
+                          color: Colors.black45,
+                        ),
+                      ),
+                      SizedBox(height: size.height * 0.020),
+                      Expanded(
+                        child: FutureBuilder<QuerySnapshot>(
+                            future: mainposts,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final List<DocumentSnapshot> documents =
+                                    snapshot.data.docs;
+                                return ListView(
+                                    physics: BouncingScrollPhysics(),
                                     scrollDirection: Axis.horizontal,
                                     children: documents
                                         .map((doc) => InkWell(
@@ -287,17 +407,17 @@ class _MyMainPageState extends State<MyMainPage> with TickerProviderStateMixin {
                                                 img: doc['image'],
                                               ),
                                             ))
-                                        .toList()),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Text(snapshot.error);
-                            }
-                            return Center(child: CircularProgressIndicator());
-                          }),
-                    ),
-                    SizedBox(height: size.height * 0.050)
-                  ],
-                ))),
+                                        .toList());
+                              } else if (snapshot.hasError) {
+                                return Text(snapshot.error);
+                              }
+                              return Center(child: CircularProgressIndicator());
+                            }),
+                      ),
+                      SizedBox(height: size.height * 0.050)
+                    ],
+                  ))),
+        ),
       ),
     );
   }

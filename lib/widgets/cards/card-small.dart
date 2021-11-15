@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfirebasecrud/constants/Theme.dart';
+import 'package:flutterfirebasecrud/functions.dart';
 
 class CardSmall extends StatelessWidget {
   CardSmall(
@@ -21,7 +22,7 @@ class CardSmall extends StatelessWidget {
   Widget build(BuildContext context) {
     return Flexible(
         child: Container(
-      height: 235,
+      height: size.height * 0.23,
       child: GestureDetector(
         onTap: tap,
         child: Card(
@@ -54,13 +55,15 @@ class CardSmall extends StatelessWidget {
                         children: [
                           Text(title,
                               style: TextStyle(
-                                  color: NowUIColors.text, fontSize: 12)),
+                                color: NowUIColors.text,
+                                fontSize: size.height * 0.012,
+                              )),
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(cta,
                                 style: TextStyle(
                                     color: NowUIColors.primary,
-                                    fontSize: 11,
+                                    fontSize: size.height * 0.012,
                                     fontWeight: FontWeight.w600)),
                           )
                         ],

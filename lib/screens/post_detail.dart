@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutterfirebasecrud/constants/Theme.dart';
 import 'package:flutterfirebasecrud/functions.dart';
+import 'package:get/get.dart';
 
 class PostDetail extends StatefulWidget {
   final String article;
@@ -19,6 +21,41 @@ class _PostDetailState extends State<PostDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(
+            AppBar().preferredSize.height,
+          ),
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+              child: AppBar(
+                  backgroundColor: Colors.white,
+                  title: Text(
+                    widget.title,
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: size.height * 0.024,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  leading: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Icon(
+                      Icons.arrow_left,
+                      color: Colors.black87,
+                    ),
+                    style: ButtonStyle(
+                        minimumSize: MaterialStateProperty.all(Size(50, 50)),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white70),
+                        backgroundColor: MaterialStateProperty.all(
+                          Colors.white,
+                        ),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side:
+                                BorderSide(color: Colors.black87, width: 1)))),
+                  )))),
       backgroundColor: NowUIColors.bgColorScreen,
       body: Stack(
         children: <Widget>[
@@ -27,6 +64,7 @@ class _PostDetailState extends State<PostDetail> {
             left: 0,
             right: 0,
             child: Container(
+              margin: EdgeInsets.only(top: 5),
               height: size.height * 0.3,
               width: double.infinity,
               child: Image.network(
@@ -39,11 +77,8 @@ class _PostDetailState extends State<PostDetail> {
                     children: [
                       Spacer(),
                       Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes
-                              : null,
+                        child: SpinKitFadingFour(
+                          color: Colors.blue[700],
                         ),
                       ),
                       Spacer()
@@ -54,7 +89,7 @@ class _PostDetailState extends State<PostDetail> {
             ),
           ),
           Positioned(
-            top: 250,
+            top: size.height * 0.2,
             right: 0,
             bottom: 0,
             left: 0,
@@ -77,33 +112,28 @@ class _PostDetailState extends State<PostDetail> {
                         ],
                       ),
                       child: SingleChildScrollView(
+                          physics: BouncingScrollPhysics(),
                           child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 32.0, right: 32.0, top: 42.0),
-                        child: Column(children: [
-                          Text(widget.title,
-                              style: TextStyle(
-                                  color: NowUIColors.text,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 17.0)),
-                          SizedBox(height: size.height * 0.020),
-                          Text(widget.article,
-                              style: TextStyle(color: NowUIColors.time)),
-                          SizedBox(height: size.height * 0.020),
-                          SizedBox(
-                            width: size.width * 0.5,
-                            child: Divider(
-                              thickness: 0.3,
-                              color: Colors.black45,
-                            ),
-                          ),
-                          SizedBox(height: size.height * 0.020),
-                          SingleChildScrollView(
-                            child: Text(widget.article2,
-                                style: TextStyle(color: NowUIColors.black)),
-                          )
-                        ]),
-                      ))),
+                            padding: const EdgeInsets.only(
+                                left: 32.0, right: 32.0, top: 30.0),
+                            child: Column(children: [
+                              SizedBox(height: size.height * 0.005),
+                              Text(widget.article,
+                                  style: TextStyle(color: NowUIColors.time)),
+                              SizedBox(height: size.height * 0.020),
+                              SizedBox(
+                                width: size.width * 0.5,
+                                child: Divider(
+                                  thickness: 0.3,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                              SizedBox(height: size.height * 0.020),
+                              Text(widget.article2,
+                                  style: TextStyle(color: NowUIColors.black)),
+                              SizedBox(height: size.height * 0.020),
+                            ]),
+                          ))),
                 ),
               ],
             ),

@@ -29,12 +29,12 @@ class GlobalErrorWidget extends StatelessWidget {
                 Text('Hata!',
                     textScaleFactor: 1,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 22, color: Colors.black54)),
+                    style: TextStyle(color: Colors.black54)),
                 SizedBox(
                   height: 8,
                 ),
                 Text(
-                  'Bir hata oluştu, buraya dokunarak sayfayı tekrar yüklemeyi deneyin.',
+                  'Bir hata oluştu, lütfen daha sonra tekrar deneyin.',
                   textScaleFactor: 1,
                   maxLines: 6,
                   overflow: TextOverflow.ellipsis,

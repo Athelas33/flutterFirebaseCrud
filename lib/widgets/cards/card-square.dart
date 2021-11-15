@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutterfirebasecrud/constants/Theme.dart';
 import 'package:flutterfirebasecrud/functions.dart';
 
@@ -21,7 +22,7 @@ class CardSquare extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 250,
+        height: size.height * 0.29,
         width: null,
         child: Card(
             elevation: 3,
@@ -29,24 +30,21 @@ class CardSquare extends StatelessWidget {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4.0))),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   flex: 2,
                   child: Container(
-                    alignment: Alignment.center,
                     child: Image.network(
                       img,
-                      fit: BoxFit.scaleDown,
+                      fit: BoxFit.fill,
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
-                                : null,
+                          child: SpinKitFadingFour(
+                            color: Colors.blue[700],
+                            size: size.height * 0.050,
                           ),
                         );
                       },
@@ -55,17 +53,19 @@ class CardSquare extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 9.0, bottom: 10.0, left: 16.0, right: 16.0),
+                    padding: const EdgeInsets.all(8),
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Spacer(),
-                          Text(title,
-                              style: TextStyle(
-                                  color: NowUIColors.text, fontSize: 12)),
+                          FittedBox(
+                            child: Text(title,
+                                style: TextStyle(
+                                  color: NowUIColors.text,
+                                )),
+                          ),
                           Spacer(),
                         ],
                       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutterfirebasecrud/functions.dart';
 
 class Loading extends StatelessWidget {
   const Loading({Key key}) : super(key: key);
@@ -12,8 +13,8 @@ class Loading extends StatelessWidget {
         children: [
           Spacer(),
           Container(
-            height: 70,
-            width: 70,
+            height: size.height * 0.070,
+            width: size.height * 0.070,
             child: Image.asset(
               'assets/images/mylogo.png',
               color: Colors.black87,
@@ -24,7 +25,7 @@ class Loading extends StatelessWidget {
           ),
           SpinKitFadingFour(
             color: Colors.black87,
-            size: 50.0,
+            size: size.height * 0.050,
           ),
           Spacer(),
         ],

@@ -45,7 +45,9 @@ class _LoginPageState extends State<LoginPage> {
             ? Loading()
             : Scaffold(
                 appBar: PreferredSize(
-                  preferredSize: Size.fromHeight(100),
+                  preferredSize: Size.fromHeight(
+                    AppBar().preferredSize.height,
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                     child: AppBar(
@@ -54,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                           'Giriş Yap',
                           style: TextStyle(
                               color: Colors.black87,
-                              fontSize: 25,
+                              fontSize: size.height * 0.024,
                               fontWeight: FontWeight.w700),
                         ),
                         leading: ElevatedButton(

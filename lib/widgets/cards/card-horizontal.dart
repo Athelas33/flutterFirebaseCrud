@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutterfirebasecrud/constants/Theme.dart';
 
 import '../../functions.dart';
@@ -18,8 +19,8 @@ class CardHorizontal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 80,
-        width: 350,
+        height: size.height * 0.080,
+        width: size.height * 0.42,
         child: Card(
           elevation: 3,
           shadowColor: NowUIColors.muted.withOpacity(0.22),
@@ -39,11 +40,9 @@ class CardHorizontal extends StatelessWidget {
                           ImageChunkEvent loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
-                                : null,
+                          child: SpinKitFadingFour(
+                            color: Colors.blue[700],
+                            size: size.height * 0.050,
                           ),
                         );
                       },
@@ -54,7 +53,7 @@ class CardHorizontal extends StatelessWidget {
                           bottomLeft: Radius.circular(4.0)),
                     )),
               ),
-              Flexible(
+              Expanded(
                   flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -65,24 +64,26 @@ class CardHorizontal extends StatelessWidget {
                         Text(title,
                             style: TextStyle(
                                 color: NowUIColors.text,
-                                fontSize: 12,
+                                fontSize: size.height * 0.014,
                                 fontWeight: FontWeight.w600)),
                         Text(cta,
-                            maxLines: 8,
+                            maxLines: 5,
                             style: TextStyle(
                               color: Colors.black87,
-                              fontSize: 11,
+                              fontSize: size.height * 0.013,
                               overflow: TextOverflow.ellipsis,
                             )),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text("Devamını okuyunuz..",
-                                textAlign: TextAlign.end,
-                                style: TextStyle(
-                                    color: Colors.blue[700],
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600)),
+                            FittedBox(
+                              child: Text("Devamını okuyunuz..",
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      color: Colors.blue[700],
+                                      fontSize: size.height * 0.012,
+                                      fontWeight: FontWeight.w600)),
+                            ),
                           ],
                         )
                       ],
